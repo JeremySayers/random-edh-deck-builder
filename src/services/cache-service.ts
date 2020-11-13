@@ -1,3 +1,5 @@
+import LZString from 'lz-string';
+
 export default class CacheService {
     public static setCacheItem(key: string, value: any, ttl: number) {
         const now = new Date();
@@ -6,17 +8,26 @@ export default class CacheService {
             expiry: now.getTime() + ttl
         };
 
-        localStorage.setItem(key, JSON.stringify(item));
+        const itemJson = JSON.stringify(item);
+        const compressed = LZString.compressToUTF16(itemJson);
+
+        localStorage.setItem(key, compressed);
     }
 
     public static getCacheItem(key: string) {
-        const itemJson = localStorage.getItem(key);
+        const compressed = localStorage.getItem(key);
 
-        if (!itemJson) {
+        if (!compressed) {
             return null;
         }
 
-        const item = JSON.parse(itemJson);
+        const uncompressedJson = LZString.decompressFromUTF16(compressed);
+
+        if (!uncompressedJson) {
+            return null;
+        }
+
+        const item = JSON.parse(uncompressedJson);
         const now = new Date();
 
         if (now.getTime() > item.expiry) {
