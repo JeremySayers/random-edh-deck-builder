@@ -6,7 +6,7 @@ export interface Prices {
     tix?: any;
 }
 
-export interface Card {
+export interface Card{
     id: string;
     name: string;
     image: string;

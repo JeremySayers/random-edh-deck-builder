@@ -1,8 +1,12 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import './App.css';
-import CardComponent from './components/card-component';
+import MenuComponent from './components/menu-component';
 import { Card } from './models/card';
-
+import CardType from './enums/card-type-enum';
+import CardSelectionComponent from './components/card-selection-component';
+import { ProgressSpinner } from 'primereact/progressspinner';
+import ConfirmationDialogComponent from './components/confirmation-dialog-component';
+import ExportService from './services/export-service';
 /**
  * Interface used for the current state of loading.
  */
@@ -17,8 +21,10 @@ const App: React.FunctionComponent = () => {
     // Setup all of the useState hooks.
     const[cards, setCards] = useState<Card[]>([]);
     const[cardCache, setCardCache] = useState<Card[]>([]);
+    const[currentlyShowingTypes, setCurrentlyShowingTypes] = useState<CardType>(CardType.AllTypes);
     const[currentDeck, setCurrentDeck] = useState<Card[]>([]);
-    const[loadingStatus, setLoadingStatus] = useState<loadingStatusProps>({complete: false});   
+    const[loadingStatus, setLoadingStatus] = useState<loadingStatusProps>({complete: false});
+    const[showConfirmationDialog, setShowConfirmationDialog] = useState<boolean>(false);
 
     const scrollRef = useRef<HTMLInputElement>(null);
 
@@ -26,7 +32,7 @@ const App: React.FunctionComponent = () => {
      * Updates the state of the current deck when a new card is clicked.
      * @param card - The card that is selected.
      */
-    const handleClick = async (card: Card) => {
+    const handleClick = (card: Card) => {
         setCurrentDeck([...currentDeck, card]);
     };
 
@@ -37,6 +43,30 @@ const App: React.FunctionComponent = () => {
     const handleDontLikeTheseClick = () => {        
         updateRandomCards();
     };
+
+    const handleCardTypeClick = (cardType: CardType) => {
+        setCurrentlyShowingTypes(cardType);
+    };
+
+    const handleMenuNewClick = () => {
+        setShowConfirmationDialog(true);
+    }
+
+    const handleConfirmationDialogOnClick = (confirm: boolean) => {
+        setShowConfirmationDialog(false);        
+        if (confirm) {
+            setCurrentDeck([]);
+            setCurrentlyShowingTypes(CardType.AllTypes);
+        }
+    }
+
+    const handleMenuExportAsTxtClick = () => {
+        ExportService.exportAsTxtFile(currentDeck);
+    }
+
+    const handleMenuExportAsJsonClick = () => {
+        ExportService.exportAsJsonFile(currentDeck);
+    }
 
     /**
      * Creates a new callback to update the set of random cards to choose from.
@@ -50,7 +80,7 @@ const App: React.FunctionComponent = () => {
             return;
         }
 
-        let cards = commanderOnly ? cardCache.filter((card: Card) => {return card.canBeCommander}) : cardCache;
+        let cards = commanderOnly ? cardCache.filter((card: Card) => {return card.canBeCommander && card.type_line.includes('Eldrazi')}) : cardCache;
 
         if (!commanderOnly && currentDeck.length > 0) {
             cards = cards.filter((card) => {
@@ -60,24 +90,45 @@ const App: React.FunctionComponent = () => {
 
                 return card.color_identity.every((color) => currentDeck[0].color_identity.includes(color))
             });
+
+            if (currentlyShowingTypes.searchString !== undefined) {
+                cards = cards.filter((card) => {
+                    return card.type_line.toLowerCase().includes(currentlyShowingTypes.searchString!);
+                });
+            }
+        }
+
+        if (cards?.length < 1) {
+            return;
         }
 
         let newCards: Card[] = [];
+        
+        // filter out any cards already in the deck
+        cards = cards.filter((card) =>{
+            return !currentDeck.includes(card);
+        });
 
-        for (let i = 0; i < 5; i++) {
-            let potentialCardPick: Card;
-
-            do {
-                potentialCardPick = cards[Math.floor(Math.random() * cards.length)];
-            } 
-            while (newCards.includes(potentialCardPick) || currentDeck.includes(potentialCardPick))
-
-            newCards.push(potentialCardPick);
-        }
+        if (cards.length < 6) {
+            cards.map((card) => {
+                newCards.push(card);
+            })
+        } else {
+            for (let i = 0; i < 6; i++) {
+                let potentialCardPick: Card;
+    
+                do {
+                    potentialCardPick = cards[Math.floor(Math.random() * cards.length)];
+                } 
+                while (newCards.includes(potentialCardPick) || currentDeck.includes(potentialCardPick))
+    
+                newCards.push(potentialCardPick);
+            }
+        }        
 
         setCards(newCards);
         scrollRef.current?.scrollIntoView({behavior: "smooth"});
-    }, [cardCache, currentDeck]);
+    }, [cardCache, currentDeck, currentlyShowingTypes]);
 
     /**
      * Called on initial load, fetches the card database from the server.
@@ -106,29 +157,34 @@ const App: React.FunctionComponent = () => {
     }, [loadingStatus, updateRandomCards]);
 
     return (
-    <div>
-        {currentDeck.length < 65 ?
-            <div>
-                <div className="header" ref={scrollRef}>{currentDeck.length === 0 ? "Pick a commander" : `Pick a card (${currentDeck.length+1}/65)`}</div>
-                <div className="card-collection">
-                    {cards && cards.length > 0 ? cards.map(card => {
-                        return <CardComponent card={card} key={card.id} onClick={() => handleClick(card)} />
-                    }): <h1>Loading...</h1>}
+        <div>
+            <MenuComponent 
+                handleNewClick={handleMenuNewClick} 
+                currentDeckCount={currentDeck.length}
+                handleExportAsTxtClick={handleMenuExportAsTxtClick}
+                handleMenuExportAsJsonClick={handleMenuExportAsJsonClick}
+            />
+            {cardCache?.length > 0
+            ?
+                <div>
+                    <CardSelectionComponent
+                        currentDeck={currentDeck} 
+                        handleDontLikeTheseClick={handleDontLikeTheseClick} 
+                        handleCardTypeClick={handleCardTypeClick} 
+                        handleClick={handleClick}
+                        currentlyShowingTypes={currentlyShowingTypes}
+                        scrollRef={scrollRef}
+                        cards={cards}
+                    />
+                    <ConfirmationDialogComponent
+                        show={showConfirmationDialog}
+                        handleOnClick={handleConfirmationDialogOnClick}
+                    />
                 </div>
-                {cards && cards.length > 0 ?
-                    <div className="menu-container fade-in">
-                        <button type="button" className="btn btn-outline-primary btn-lg menu-button" onClick={handleDontLikeTheseClick}>I don't like these</button>
-                        <button type="button" className="btn btn-outline-danger btn-lg menu-button">Startover</button>
-                    </div> : <div/>
-                }            
-            </div>
-        : 
-            <div>
-                {currentDeck.map((card) => {return <div key={card.id}>{card.name}</div>})}
-            </div>
-        }
-    </div>
-    
+            :
+                <ProgressSpinner/>
+            }
+        </div>
     );
 };
 
