@@ -3,28 +3,47 @@ import './App.css';
 import CardComponent from './components/card-component';
 import { Card } from './models/card';
 
+/**
+ * Interface used for the current state of loading.
+ */
 interface loadingStatusProps {
     complete: boolean;
 }
 
+/**
+ * The main app.
+ */
 const App: React.FunctionComponent = () => {
+    // Setup all of the useState hooks.
     const[cards, setCards] = useState<Card[]>([]);
     const[cardCache, setCardCache] = useState<Card[]>([]);
     const[currentDeck, setCurrentDeck] = useState<Card[]>([]);
+    const[loadingStatus, setLoadingStatus] = useState<loadingStatusProps>({complete: false});   
 
     const scrollRef = useRef<HTMLInputElement>(null);
-    const[loadingStatus, setLoadingStatus] = useState<loadingStatusProps>({complete: false});
 
-    const handleClick = (card: Card) => {
+    /**
+     * Updates the state of the current deck when a new card is clicked.
+     * @param card - The card that is selected.
+     */
+    const handleClick = async (card: Card) => {
         setCurrentDeck([...currentDeck, card]);
     };
 
-    const handleDontLikeTheseClick = () => {
-        const commanderOnly = currentDeck.length === 0;
-        updateRandomCards(commanderOnly);
+    /**
+     * Generates a new 5 cards to choose from when the "I don't like these"
+     * button is clicked.
+     */
+    const handleDontLikeTheseClick = () => {        
+        updateRandomCards();
     };
 
-    const updateRandomCards = useCallback((commanderOnly: boolean) => {
+    /**
+     * Creates a new callback to update the set of random cards to choose from.
+     * Dependant on the cardCache and currentDeck state.
+     */
+    const updateRandomCards = useCallback(() => {
+        const commanderOnly = currentDeck.length === 0;
         setCards([]);
 
         if (cardCache.length === 0) {
@@ -60,6 +79,9 @@ const App: React.FunctionComponent = () => {
         scrollRef.current?.scrollIntoView({behavior: "smooth"});
     }, [cardCache, currentDeck]);
 
+    /**
+     * Called on initial load, fetches the card database from the server.
+     */
     useEffect(() => {
         const fetchCardCache = async () => {
             const response = await fetch('/edh/database/limitedDb.json');
@@ -73,15 +95,15 @@ const App: React.FunctionComponent = () => {
         fetchCardCache();
     }, []);
 
+    /**
+     * Updates the random cards displayed whenever loading is complete
+     * or when the updateRandomCard's dependencies are updated.
+     */
     useEffect(() => {
         if (loadingStatus.complete) {
-            updateRandomCards(true);
+            updateRandomCards();
         }
-    }, [loadingStatus, updateRandomCards])
-
-    useEffect(() => {
-        updateRandomCards(false);
-    }, [updateRandomCards]);
+    }, [loadingStatus, updateRandomCards]);
 
     return (
     <div>
