@@ -16,6 +16,15 @@
 
 .mtg-card {
     text-align: center;
+    transition: transform .2s;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.mtg-card:hover {
+    transform: translateY(-10px);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 .header {
