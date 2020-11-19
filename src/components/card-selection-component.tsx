@@ -53,7 +53,7 @@ const CardSelectionComponent = (props: CardComponentProps) => {
                     {props.cards?.length > 0
                     ?
                         props.cards.map(card => {
-                            return (<CardComponent card={card} key={card.id} onClick={props.handleClick} />)
+                            return (<CardComponent card={card} key={card.id} showName={true} onClick={props.handleClick} />)
                         })
                     :
                         <div>No more cards of this type for your selected commander :(</div>

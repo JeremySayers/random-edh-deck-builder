@@ -97,6 +97,27 @@
     width: 100%;
 }
 
+.current-deck-view-component {
+    z-index: 10000;
+    margin: 10px;
+}
+
+.current-deck-view-component .p-panel-content {    
+    display: flex;
+    justify-content: space-around;
+    padding-top: 0px;
+}
+
+.current-deck-view-component .cmc-bucket {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.current-deck-view-component .deck-view-card:not(:first-child) {
+    margin-top:-330px;
+}
+
 .fade-in {
     animation: fadeIn ease 1s;
     -webkit-animation: fadeIn ease 1s;

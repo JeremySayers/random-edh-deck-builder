@@ -8,6 +8,7 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import ConfirmationDialogComponent from './components/confirmation-dialog-component';
 import ExportService from './services/export-service';
 import { InputText } from 'primereact/inputtext';
+import DeckViewComponent from './components/deck-view-component';
 
 /**
  * Interface used for the current state of loading.
@@ -176,7 +177,7 @@ const App: React.FunctionComponent = () => {
         }        
 
         setCards(newCards);
-        scrollRef.current?.scrollIntoView({behavior: "smooth"});
+        //scrollRef.current?.scrollIntoView({behavior: "smooth"});
     }, [cardCache, currentDeck, currentlyShowingTypes, searchString]);
 
     /**
@@ -231,6 +232,7 @@ const App: React.FunctionComponent = () => {
                         scrollRef={scrollRef}
                         cards={cards}
                     />
+                    <DeckViewComponent currentDeck={currentDeck}/>
                     <ConfirmationDialogComponent
                         show={showConfirmationDialog}
                         handleOnClick={handleConfirmationDialogOnClick}
