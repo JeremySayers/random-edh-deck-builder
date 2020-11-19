@@ -82,6 +82,21 @@
     min-width: 6rem;
 }
 
+.searchContainer {
+    margin-top: 5px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.searchContainer .search-box {
+    width: 80%;
+}
+
+.searchContainer .search-input-box {
+    width: 100%;
+}
+
 .fade-in {
     animation: fadeIn ease 1s;
     -webkit-animation: fadeIn ease 1s;

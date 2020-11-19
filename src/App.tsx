@@ -111,8 +111,9 @@ const App: React.FunctionComponent = () => {
             terms.map((term: string, index: number) => {
                 if (['red', 'blue', 'black', 'white', 'green'].includes(term)) {
                     let colorCode = term[0].toUpperCase();
-                    if (colorCode === 'B'){
-                        colorCode = 'U'
+
+                    if (term.toLowerCase() == 'blue'){
+                        colorCode = 'U';
                     }
                     
                     usedTerms.push(term);
@@ -215,10 +216,12 @@ const App: React.FunctionComponent = () => {
             {cardCache?.length > 0
             ?
                 <div>
-                    <span className="p-input-icon-left">
-                        <i className="pi pi-search" />
-                        <InputText value={searchString} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchString(e.target.value)} placeholder="Search" />
-                    </span>
+                        <div  className="searchContainer">
+                            <div className="p-input-icon-left search-box">
+                                <i className="pi pi-search"/>
+                                <InputText className="search-input-box" value={searchString} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchString(e.target.value)} placeholder="Search" />
+                            </div>
+                        </div>
                     <CardSelectionComponent
                         currentDeck={currentDeck} 
                         handleDontLikeTheseClick={handleDontLikeTheseClick} 
