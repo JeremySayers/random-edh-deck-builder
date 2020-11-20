@@ -1,11 +1,14 @@
 import { Menubar } from 'primereact/menubar';
 import React from 'react';
+import SearchComponent from './search-component';
 
 interface MenuComponentProps {
     currentDeckCount: number,
     handleNewClick: any,
     handleExportAsTxtClick: any,
-    handleMenuExportAsJsonClick: any
+    handleMenuExportAsJsonClick: any,
+    searchString: string,
+    setSearchString: any
 }
 
 const MenuComponent = (props: MenuComponentProps) => {
@@ -63,9 +66,16 @@ const MenuComponent = (props: MenuComponentProps) => {
         }        
      ];
 
-     const end = <div>Current Deck Size ({props.currentDeckCount}/100)</div>;
+     const end =
+        <div className="menu-end-components">
+            <SearchComponent 
+                searchString={props.searchString}
+                setSearchString={props.setSearchString}
+            />
+            <div className="menu-end-deck-text">Current Deck Size ({props.currentDeckCount}/100)</div>
+        </div>;
 
-     return (<Menubar model={items} end={()=>end}/>);
+     return (<Menubar className="menu-component-container" model={items} end={()=>end}/>);
 }
 
 export default MenuComponent;

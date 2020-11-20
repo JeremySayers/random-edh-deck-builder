@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Panel } from 'primereact/panel';
 import { Card } from '../models/card';
 import CardComponent from './card-component';
+import { Button } from 'primereact/button';
 
 interface DeckViewComponentProps {
     currentDeck: Card[];
 }
 
 const DeckViewComponent = (props: DeckViewComponentProps) => {
+    const [deckViewMaximized, setDeckViewMaximized] = useState<boolean>(false);
+
     const handleCardOnClick = () => {
 
     }
@@ -20,10 +23,15 @@ const DeckViewComponent = (props: DeckViewComponentProps) => {
         }
     });
 
-    cmcBuckets = cmcBuckets.sort()
+    cmcBuckets = cmcBuckets.sort((a, b) => a - b)
+
+    const header = 
+        <div className="current-deck-view-header">
+            <div>Current Deck ({props.currentDeck.length}/100)</div>
+        </div>;
     return (
         <div className="current-deck-view-component">
-            <Panel header={`Current Deck (${props.currentDeck.length}/100)`}>
+            <Panel toggleable header={header}>
             {
             cmcBuckets.map((cmc: number) => {
                 return (
@@ -34,7 +42,7 @@ const DeckViewComponent = (props: DeckViewComponentProps) => {
                             if (card.cmc === cmc) {
                                 return (
                                     <div className={"deck-view-card"}>
-                                        <CardComponent card={card} key={card.id} showName={true} onClick={handleCardOnClick} />
+                                        <CardComponent animateFadeIn={false} card={card} key={card.id} showName={true} onClick={handleCardOnClick} />
                                     </div>
                                 )
                             }

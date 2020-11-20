@@ -9,6 +9,7 @@ import ConfirmationDialogComponent from './components/confirmation-dialog-compon
 import ExportService from './services/export-service';
 import { InputText } from 'primereact/inputtext';
 import DeckViewComponent from './components/deck-view-component';
+import SearchComponent from './components/search-component';
 
 /**
  * Interface used for the current state of loading.
@@ -213,16 +214,12 @@ const App: React.FunctionComponent = () => {
                 currentDeckCount={currentDeck.length}
                 handleExportAsTxtClick={handleMenuExportAsTxtClick}
                 handleMenuExportAsJsonClick={handleMenuExportAsJsonClick}
+                searchString={searchString}
+                setSearchString={setSearchString}
             />
             {cardCache?.length > 0
             ?
                 <div>
-                        <div  className="searchContainer">
-                            <div className="p-input-icon-left search-box">
-                                <i className="pi pi-search"/>
-                                <InputText className="search-input-box" value={searchString} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchString(e.target.value)} placeholder="Search" />
-                            </div>
-                        </div>
                     <CardSelectionComponent
                         currentDeck={currentDeck} 
                         handleDontLikeTheseClick={handleDontLikeTheseClick} 

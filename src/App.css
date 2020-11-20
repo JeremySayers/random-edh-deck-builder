@@ -4,14 +4,27 @@
     flex-wrap: wrap;
 }
 
-.menu-container {
+.menu-component-container .p-menubar-end{
+    margin-left: 0 !important;
+    width: 100%;
+}
+
+.menu-end-components {
     display: flex;
-    justify-content: center;
-    margin-top: 40px;
+    align-items: center;
+    width: 100%;
+}
+
+.menu-end-deck-text {
+    width: auto;
+    white-space: nowrap;
+}
+
+.mtg-card-selection-container-panel {
+    margin: 10px;
 }
 
 .mtg-card-selection-container {
-    margin: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -23,7 +36,7 @@
     width: 100%;
 }
 
-.card-type-selection h3 {
+.card-type-selection .currently-showing {
     margin-right: .5rem;
 }
 
@@ -46,11 +59,14 @@
     backface-visibility: hidden;
 }
 
+.mtg-card-no-fade {
+    text-align: center;
+}
 .mtg-card .card-name {
     margin-bottom:.3rem;
 }
 
-.mtg-card:hover {
+.mtg-card:hover, .mtg-card-no-fade:hover{
     transform: translateY(-10px);
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
@@ -100,12 +116,22 @@
 .current-deck-view-component {
     z-index: 10000;
     margin: 10px;
+    position: relative;
+}
+
+.current-deck-view-component.maximized {
+    position: absolute;
+    top: 60px;
+    left: 0px;
+    width: calc(100% - 20px);
+    z-index: 10000;
+    height: calc(100% - 150px);
+    transition: top 1.0s linear;
 }
 
 .current-deck-view-component .p-panel-content {    
     display: flex;
     justify-content: space-around;
-    padding-top: 0px;
 }
 
 .current-deck-view-component .cmc-bucket {
@@ -118,17 +144,24 @@
     margin-top:-330px;
 }
 
+.current-deck-view-component .current-deck-view-header {
+    display: flex;
+    width:100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .fade-in {
-    animation: fadeIn ease 1s;
-    -webkit-animation: fadeIn ease 1s;
-    -moz-animation: fadeIn ease 1s;
-    -o-animation: fadeIn ease 1s;
-    -ms-animation: fadeIn ease 1s;
+    animation: fadeIn ease .6s;
+    -webkit-animation: fadeIn ease .6s;
+    -moz-animation: fadeIn ease .6s;
+    -o-animation: fadeIn ease .6s;
+    -ms-animation: fadeIn ease .6s;
   }
   @keyframes fadeIn {
     0% {
       opacity:0;
-      transform: translateY(100px);
+      transform: translateY(30px);
     }
     100% {
       opacity:1;
@@ -139,7 +172,7 @@
   @-moz-keyframes fadeIn {
     0% {
       opacity:0;
-      transform: translateY(100px);
+      transform: translateY(30px);
     }
     100% {
       opacity:1;
@@ -150,7 +183,7 @@
   @-webkit-keyframes fadeIn {
     0% {
       opacity:0;
-      -webkit-transform: translateY(100px);
+      -webkit-transform: translateY(30px);
     }
     100% {
       opacity:1;
